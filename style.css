@@ -1,0 +1,14 @@
+#canvas {
+    cursor: none;
+    display: inline;
+}
+#canvas-content {
+    text-align: center;
+}
+body {
+    background-color: black;
+}
+h1 {
+    color:  white;
+    text-align: center;
+}

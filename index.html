@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Duelo</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+    <script src="scripts/player.js"></script>
+    <script src="scripts/bullet.js"></script>
+</head>
+
+<body>
+    <h1>Duelo</h1>
+    <div id="canvas-content">
+        <canvas id="canvas" width="640" height="480"></canvas>
+        <script>
+            var screen = document.getElementById("canvas");
+            var ctx = screen.getContext("2d");
+            var dt = prevTime = 0;
+            var player1 = new Player(1, 10, 10, 32, 32);
+            var player2 = new Player(2, 30, 10, 32, 32);
+            var speed = 100;
+            function clearScreen() {
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, screen.width, screen.height);
+            }
+            function step(t) {
+                dt = (t - prevTime) / 1000;
+                clearScreen();
+                //move
+                player1.move(dt);
+                player1.moveBullets(dt);
+                player2.move(dt);
+                player2.moveBullets(dt);
+                //boundaries and collision
+                player1.boundaries(screen.width, screen.height);
+                player2.boundaries(screen.width, screen.height);
+                //draw
+                player1.draw(ctx);
+                player1.drawBullets(ctx);
+                player2.draw(ctx);
+                player2.drawBullets(ctx);
+                prevTime = t;
+                requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+            addEventListener("keydown", function (e) {
+                switch (e.keyCode) {
+                    case 87: //w key
+                        player1.position = "up";
+                        player1.vy = -1 * speed;
+                        break;
+                    case 83: //s key
+                        player1.vy = speed;
+                        player1.position = "down";
+                        break;
+                    case 65://a key
+                        player1.vx = -1 * speed;
+                        player1.position = "left";
+                        break;
+                    case 68: //d key
+                        player1.vx = speed;
+                        player1.position = "right";
+                        break;
+                    case 69: //e key
+                        player1.shoot(dt);
+                        break;
+                    case 37: //left arrow key
+                        player2.position = "left";
+                        player2.vx = -1 * speed;
+                        break;
+                    case 39: //right arrow key
+                        player2.position = "right";
+                        player2.vx = speed;
+                        break;
+                    case 38: //up arrow key
+                        player2.position = "up";
+                        player2.vy = -1 * speed;
+                        break;
+                    case 40:
+                        player2.position = "down";
+                        player2.vy = speed;
+                        break;
+                    case 16: //shift-r key
+                        player2.shoot(dt);
+                        break;
+                    default:
+                }
+            });
+            addEventListener("keyup", function (e) {
+                switch (e.keyCode) {
+                    case 87: //w key
+                        player1.vy = 0;
+                        break;
+                    case 83: //w key
+                        player1.vy = 0;
+                        break;
+                    case 65://a key
+                        player1.vx = 0;
+                        break;
+                    case 68: //d key
+                        player1.vx = 0;
+                        break;
+                    case 69: //e key
+                        break;
+                    case 37: //left arrow key
+                        player2.vx = 0;
+                        break;
+                    case 39: //right arrow key
+                        player2.vx = 0;
+                        break;
+                    case 38: //up arrow key
+                        player2.vy = 0;
+                        break;
+                    case 40: //down arrow key
+                        player2.vy = 0;
+                        break;
+                    case 16: //shift-r key
+                        break;
+                    default:
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>
