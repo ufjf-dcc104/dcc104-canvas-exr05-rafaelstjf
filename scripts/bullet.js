@@ -27,6 +27,13 @@ Bullet.prototype.checkBoundaries = function (w, h) {
     if (this.y >= h || this.y <= 0)
         return true;
 }
+Bullet.prototype.checkCollision = function (target) {
+    if (target.x + target.w < this.x) return false;
+    if (target.x > this.x + this.w) return false;
+    if (target.y + target.h < this.y) return false;
+    if (target.y > this.y + this.h) return false;
+    return true;
+}
 Bullet.prototype.spawn = function (x, y, owner, position) {
     this.x = x;
     this.y = y;

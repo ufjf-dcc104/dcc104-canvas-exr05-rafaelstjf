@@ -8,6 +8,9 @@
     <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
     <script src="scripts/player.js"></script>
     <script src="scripts/bullet.js"></script>
+    <script src="scripts/map.js"></script>
+    <script src="scripts/block.js"></script>
+    <script src="scripts/AudioLibrary.js"></script>
 </head>
 
 <body>
@@ -20,7 +23,12 @@
             var dt = prevTime = 0;
             var player1 = new Player(1, 10, 10, 32, 32);
             var player2 = new Player(2, 30, 10, 32, 32);
+            var map = new Map(screen.width, screen.height);
+            var audioController = new AudioLibrary();
+            map.generateMap();
             var speed = 100;
+            audioController.load(1, "assets/sounds/gun1.mp3");
+            audioController.load(2, "assets/sounds/gun2.mp3");
             function clearScreen() {
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, screen.width, screen.height);
@@ -36,7 +44,15 @@
                 //boundaries and collision
                 player1.boundaries(screen.width, screen.height);
                 player2.boundaries(screen.width, screen.height);
+                player1.checkCollisionBulletsPlayer(player2);
+                player2.checkCollisionBulletsPlayer(player1);
+                player1.checkCollisionBulletsBullets(player2.bullets);
+                player1.checkCollisionBulletsMap(map);
+                player2.checkCollisionBulletsMap(map);
+                player1.checkCollisionPlayerMap(map);
+                player2.checkCollisionPlayerMap(map);
                 //draw
+                map.draw(ctx);
                 player1.draw(ctx);
                 player1.drawBullets(ctx);
                 player2.draw(ctx);
