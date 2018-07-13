@@ -11,6 +11,8 @@
     <script src="scripts/map.js"></script>
     <script src="scripts/block.js"></script>
     <script src="scripts/AudioLibrary.js"></script>
+    <script src="scripts/HUD.js"></script>
+    <script src="scripts/Menu.js"></script>
 </head>
 
 <body>
@@ -21,42 +23,70 @@
             var screen = document.getElementById("canvas");
             var ctx = screen.getContext("2d");
             var dt = prevTime = 0;
-            var player1 = new Player(1, 10, 10, 32, 32);
-            var player2 = new Player(2, 30, 10, 32, 32);
+            var player1 = new Player(1, 35, 10, 32, 32);
+            var player2 = new Player(2, screen.width - 120, screen.height - 32, 32, 32);
             var map = new Map(screen.width, screen.height);
+            var hud = new HUD(screen.width);
             var audioController = new AudioLibrary();
+            var menu = new Menu();
+            var state = 0;
+            /*
+                0 - menu
+                1 - in game
+                2 - game over
+            */
             map.generateMap();
             var speed = 100;
             audioController.load(1, "assets/sounds/gun1.mp3");
             audioController.load(2, "assets/sounds/gun2.mp3");
+            audioController.load(3, "assets/sounds/victory.wav");
+            audioController.load(4, "assets/sounds/hit.wav");
             function clearScreen() {
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, screen.width, screen.height);
             }
+            function resetVariables() {
+                state = 1;
+                player1.lifes = 3;
+                player2.lifes = 3;
+                player1.x = 35;
+                player1.y = 10;
+                player2.y = screen.height - 32;
+                player1.x = screen.width - 120;
+
+            }
             function step(t) {
                 dt = (t - prevTime) / 1000;
                 clearScreen();
-                //move
-                player1.move(dt);
-                player1.moveBullets(dt);
-                player2.move(dt);
-                player2.moveBullets(dt);
-                //boundaries and collision
-                player1.boundaries(screen.width, screen.height);
-                player2.boundaries(screen.width, screen.height);
-                player1.checkCollisionBulletsPlayer(player2);
-                player2.checkCollisionBulletsPlayer(player1);
-                player1.checkCollisionBulletsBullets(player2.bullets);
-                player1.checkCollisionBulletsMap(map);
-                player2.checkCollisionBulletsMap(map);
-                player1.checkCollisionPlayerMap(map);
-                player2.checkCollisionPlayerMap(map);
-                //draw
-                map.draw(ctx);
-                player1.draw(ctx);
-                player1.drawBullets(ctx);
-                player2.draw(ctx);
-                player2.drawBullets(ctx);
+                if (state == 1) {
+                    //move
+                    player1.move(dt);
+                    player1.moveBullets(dt);
+                    player2.move(dt);
+                    player2.moveBullets(dt);
+                    //boundaries and collision
+                    player1.boundaries(screen.width, screen.height);
+                    player2.boundaries(screen.width, screen.height);
+                    player1.checkCollisionBulletsPlayer(player2);
+                    player2.checkCollisionBulletsPlayer(player1);
+                    player1.checkCollisionBulletsBullets(player2.bullets);
+                    player1.checkCollisionBulletsMap(map);
+                    player2.checkCollisionBulletsMap(map);
+                    player1.checkCollisionPlayerMap(map);
+                    player2.checkCollisionPlayerMap(map);
+                    if (player1.lifes <= 0 || player2.lifes <= 0)
+                        state = 2;
+                    //draw
+                    map.draw(ctx);
+                    player1.draw(ctx);
+                    player1.drawBullets(ctx);
+                    player2.draw(ctx);
+                    player2.drawBullets(ctx);
+                    hud.draw(ctx, player1.lifes, player2.lifes);
+                }
+                else {
+                    menu.draw(ctx, screen.width, screen.height, state, player1.lifes);
+                }
                 prevTime = t;
                 requestAnimationFrame(step);
             }
@@ -133,6 +163,10 @@
                         player2.vy = 0;
                         break;
                     case 16: //shift-r key
+                        break;
+                    case 32:
+                        if (state != 1)
+                            state = 1
                         break;
                     default:
                 }

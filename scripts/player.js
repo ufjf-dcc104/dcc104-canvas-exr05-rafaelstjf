@@ -52,6 +52,7 @@ Player.prototype.checkCollisionBulletsPlayer = function (target) {
     for (var i = 0; i < this.bullets.length; i++) {
         if (this.bullets[i].checkCollision(target)) {
             if (target instanceof Player && target.id != this.id) {
+                audioController.play(4,0.5);
                 this.bullets.splice(i, 1);
                 target.lifes--;
             }
@@ -89,8 +90,8 @@ Player.prototype.boundaries = function (w, h) {
         this.x = 0;
     if (this.y + this.h >= h)
         this.y = h - this.h;
-    if (this.y <= 0)
-        this.y = 0;
+    if (this.y <= 40)
+        this.y = 40;
     for (var i = 0; i < this.bullets.length; i++) {
         if (this.bullets[i].checkBoundaries(w, h)) {
             this.bullets.splice(i, 1);
